@@ -1,8 +1,10 @@
+var path = require('path');
+
 module.exports = {
     entry: './src/index.js',
     output: {
-        filename: 'nuwe-calendar.js',
-        path: './dist'
+        path: path.join(__dirname, 'dist'),
+        filename: 'nuwe-timeline.js',
     },
     module: {
         loaders: [

@@ -1,16 +1,23 @@
 {
   "name": "nuwe-calendar",
-  "version": "0.1.0",
+  "homepage": "https://github.com/perillaroc/nuwe-calendar",
   "description": "A calendar chart using D3.js.",
-  "main": "src/index.js",
+  "version": "0.1.0",
+  "main": "./src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/perillaroc/nuwe-calendar.git"
+  },
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "build": "node_modules/.bin/webpack --color --progress",
-    "test": "jest"
+    "build": "webpack"
   },
-  "author": "perillaroc",
+  "author": {
+    "name": "perillaroc",
+    "url": "https://github.com/perillaroc"
+  },
   "license": "GPL-3.0",
   "dependencies": {
     "css-loader": "^0.26.1",
