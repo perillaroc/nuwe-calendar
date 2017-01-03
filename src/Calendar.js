@@ -59,7 +59,6 @@ export class Calendar{
 
         chart.day = timeFormat("%w"); // weekday as a decimal number [0(Sunday),6].
         chart.week = timeFormat("%U"); // week number of the year (Sunday as the first day of the week) as a decimal number [00,53].
-        chart.percent = format(".1%");
         chart.format = timeFormat("%Y-%m-%d");
 
         let color = scaleQuantize()
@@ -117,8 +116,8 @@ export class Calendar{
                 return "day " + color(data[i].value);
         })
         .select("title")
-        .text(function(d) {
-            return d + ": " + chart.percent(data[d]);
+        .text(function(d, i) {
+            return d + ": " + data[i].value;
         });
     }
 
