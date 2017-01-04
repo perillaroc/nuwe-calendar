@@ -4,7 +4,7 @@ module.exports = {
     entry: './src/index.js',
     output: {
         path: path.join(__dirname, 'dist'),
-        filename: 'nuwe-timeline.js',
+        filename: 'nuwe-calendar.js',
     },
     module: {
         loaders: [
@@ -19,6 +19,11 @@ module.exports = {
                 loader: "style-loader!css-loader",
                 exclude: /node_modules/,
                 include: __dirname
+            },
+            {
+                test: /\.json/,
+                loader: "json-loader",
+                exclude: /node_modules/
             }
         ]
     }
