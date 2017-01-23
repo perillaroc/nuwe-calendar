@@ -8,6 +8,8 @@ import {
 }  from 'd3';
 let moment = require('moment');
 
+import {mergeConfig} from './config'
+
 export class Calendar{
     /**
      *
@@ -48,8 +50,7 @@ export class Calendar{
      */
     constructor(context, config) {
         this.context = context;
-        this.config = Object.assign({}, Calendar.default);
-        this.config.data.data = config.data.data;
+        this.config = mergeConfig(Calendar.default, config);
         this.drawChart(this.context, this.config);
     }
 
