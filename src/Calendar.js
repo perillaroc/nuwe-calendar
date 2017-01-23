@@ -16,22 +16,14 @@ export class Calendar{
      *  {
      *      type: 'calendar',
      *      data: {
-     *          time_range: {
-     *              type: 'range',
-     *              start: 2016
-     *              stop: 2017
-     *          }
      *          scheme: {
      *              'date': 'YYYY/M/D', format used in moment.js
      *          },
-     *          value_scale: {
-     *              type: 'quantize',
-     *              domain: [1,5],
-     *              range: 5
-     *          }
      *          data: [
-     *              'date': date string,
-     *              'value: integer
+     *              {
+     *                  'date': date string,
+     *                  'value: integer
+     *              }
      *          ]
      *      },
      *      options: {
@@ -40,7 +32,18 @@ export class Calendar{
      *              height: 136,
      *              cell_size: 17
      *          },
-     *
+     *          scales: {
+     *              value: {
+     *                  type: 'quantize',
+     *                  domain: [1,5],
+     *                  range: 5
+     *              },
+     *              time: {
+     *                  type: 'range',
+     *                  start: 2016
+     *                  stop: 2017
+     *              }
+     *          }
      *      }
      */
     constructor(context, config) {
@@ -60,7 +63,7 @@ export class Calendar{
 
         // data
         chart.scheme = config.data.scheme;
-        let time_data = range(config.data.time_range.start,config.data.time_range.stop);
+        let time_data = range(config.options.scales.time.start, config.options.scales.time.stop);
 
         let date_map = new Map();
         let days = timeDays(new Date(time_data[0], 0, 1), new Date(time_data[time_data.length-1], 12, 0));
@@ -75,8 +78,8 @@ export class Calendar{
         chart.format = timeFormat("%Y-%m-%d");
 
         let color = scaleQuantize()
-            .domain(config.data.value_scale.domain)
-            .range(range(config.data.value_scale.range).map(function(d) { return "q" + d + "-7"; }));
+            .domain(config.options.scales.value.domain)
+            .range(range(config.options.scales.value.range).map(function(d) { return "q" + d + "-7"; }));
 
         let svg = select(context).selectAll("svg")
             .data(time_data)
@@ -153,19 +156,10 @@ export class Calendar{
 Calendar.default = {
    type: 'calendar',
    data: {
-       time_range: {
-           type: 'range',
-           start: 2016,
-           stop: 2017,
-       },
        scheme: {
            'date': 'YYYY/M/D',
        },
-       value_scale: {
-           type: 'quantize',
-           domain: [1,5],
-           range: 5
-       },
+       data: []
    },
    options: {
        size: {
@@ -173,5 +167,17 @@ Calendar.default = {
            height: 136,
            cell_size: 17
        },
+       scales: {
+           value: {
+               type: 'quantize',
+               domain: [1,5],
+               range: 5
+           },
+           time: {
+               type: 'range',
+               start: 2016,
+               stop: 2017,
+           },
+       }
    }
 };
