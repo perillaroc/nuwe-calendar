@@ -176,8 +176,8 @@ Calendar.default = {
            },
            time: {
                type: 'range',
-               start: 2016,
-               stop: 2017,
+               start: (new Date()).getFullYear(),
+               stop: (new Date()).getFullYear()+1,
            },
        }
    }
