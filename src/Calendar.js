@@ -1,14 +1,7 @@
-import {
-    timeFormat,
-    scaleQuantize,
-    range,
-    select,
-    timeDays,
-    timeMonths
-}  from 'd3';
+import {timeFormat, scaleQuantize, range, select, timeDays, timeMonths} from "d3";
+import {interpolateYlOrRd} from "d3-scale-chromatic";
+import {mergeConfig} from "./config";
 let moment = require('moment');
-
-import {mergeConfig} from './config'
 
 export class Calendar{
     /**
@@ -80,14 +73,21 @@ export class Calendar{
 
         let color = scaleQuantize()
             .domain(config.options.scales.value.domain)
-            .range(range(config.options.scales.value.range).map(function(d) { return "q" + d + "-7"; }));
+            .range(range(
+                config.options.scales.value.range.start,
+                config.options.scales.value.range.stop,
+                config.options.scales.value.range.step
+                ).map(function(d) {
+                    return interpolateYlOrRd(d);
+                })
+            );
 
         let svg = select(context).selectAll("svg")
             .data(time_data)
             .enter().append("svg")
             .attr("width", chart.width)
             .attr("height", chart.height)
-            .attr("class", "nuwe-calendar YlOrRd")
+            .attr("class", "nuwe-calendar")
             .append("g")
             .attr("transform", "translate(" + ((chart.width - chart.cell_size * 53) / 2) + "," + (chart.height - chart.cell_size * 7 - 1) + ")");
 
@@ -122,14 +122,20 @@ export class Calendar{
         rect.attr("class", function(d) {
             let date = moment(d).format("YYYY-MM-DD");
             if(date_map.get(date) == -1)
-                return "day ";
+                return "day";
             else if(date_map.get(date) == 0)
                 return "day zero";
             else
-                return "day " + color(date_map.get(date));
-        })
-        .select("title")
-        .text(function(d) {
+                return "day";
+        }).style('fill', function(d){
+            let date = moment(d).format("YYYY-MM-DD");
+            if(date_map.get(date) == -1)
+                return "#eeeeee;";
+            else if(date_map.get(date) == 0)
+                return "rgb(194,230,153)";
+            else
+                return color(date_map.get(date));
+        }).select("title").text(function(d) {
             let date = moment(d).format("YYYY-MM-DD");
             return date + ": " + date_map.get(date);
         });
@@ -155,30 +161,34 @@ export class Calendar{
 }
 
 Calendar.default = {
-   type: 'calendar',
-   data: {
-       scheme: {
-           'date': 'YYYY/M/D',
-       },
-       data: []
-   },
-   options: {
-       size: {
-           width: 960,
-           height: 136,
-           cell_size: 17
-       },
-       scales: {
-           value: {
-               type: 'quantize',
-               domain: [1,5],
-               range: 5
-           },
-           time: {
-               type: 'range',
-               start: (new Date()).getFullYear(),
-               stop: (new Date()).getFullYear()+1,
-           },
-       }
-   }
+    type: 'calendar',
+    data: {
+        scheme: {
+            'date': 'YYYY/M/D',
+        },
+        data: []
+    },
+    options: {
+        size: {
+            width: 960,
+            height: 136,
+            cell_size: 17
+        },
+        scales: {
+            value: {
+                type: 'quantize',
+                domain: [1,5],
+                range: {
+                    start: 0,
+                    stop: 1,
+                    step: 0.1
+                }
+            },
+            time: {
+                type: 'range',
+                start: (new Date()).getFullYear(),
+                stop: (new Date()).getFullYear()+1,
+            },
+        }
+    }
 };
