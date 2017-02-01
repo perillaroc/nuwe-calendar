@@ -1,11 +1,10 @@
 import { Calendar } from '../../src/index'
 
-let s = require('./data.json');
-
+let data = require('./data.json');
 
 let config = {
     data: {
-        data:s
+        data: data
     },
     options: {
         size: {
@@ -31,4 +30,5 @@ let config = {
         }
     }
 };
+
 let chart = new Calendar('#chart_container', config);

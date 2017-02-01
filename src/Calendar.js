@@ -31,7 +31,11 @@ export class Calendar{
      *              value: {
      *                  type: 'quantize',
      *                  domain: [1,5],
-     *                  range: 5
+     *                  range: {
+     *                      start: 0,
+     *                      stop: 1,
+     *                      step: 0.1
+     *                  }
      *              },
      *              time: {
      *                  type: 'range',

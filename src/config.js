@@ -1,4 +1,16 @@
-
+/**
+ * merge two configs. such as:
+ * default config is
+ *      { a: v1, b: v2 }
+ * and user config is
+ *      { b: v3 }
+ * the result config is
+ *      { a: v1, b: v3 }
+ *
+ * @param base_config
+ * @param user_config
+ * @returns {*}
+ */
 export function mergeConfig(base_config, user_config) {
     let config = Object.assign({}, base_config);
 
