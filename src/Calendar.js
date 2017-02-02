@@ -6,9 +6,7 @@ import {
     timeDays,
     timeMonths
 } from "d3";
-import {
-    interpolateYlOrRd
-} from "d3-scale-chromatic";
+import * as d3_scale_chromatic from "d3-scale-chromatic" ;
 import {mergeConfig} from "./config";
 let moment = require('moment');
 
@@ -39,7 +37,11 @@ export class Calendar{
      *          scales: {
      *              value: {
      *                  type: 'sequential',
-     *                  domain: [1,5]
+     *                  domain: [-1, 5]
+     *                  range: {
+     *                      type: 'scale-chromatic',
+     *                      scheme: 'YlOrRd'
+     *                  }
      *              },
      *              time: {
      *                  type: 'range',
@@ -79,8 +81,13 @@ export class Calendar{
         chart.week = timeFormat("%U"); // week number of the year (Sunday as the first day of the week) as a decimal number [00,53].
         chart.format = timeFormat("%Y-%m-%d");
 
-        let color = scaleSequential(interpolateYlOrRd)
-            .domain(config.options.scales.value.domain);
+        let color_domain = config.options.scales.value.domain;
+        let color_range_scheme = config.options.scales.value.range.scheme;
+        let color_function_name = "interpolate" + color_range_scheme;
+        let color_function = d3_scale_chromatic[color_function_name];
+
+        let color = scaleSequential(color_function)
+            .domain(color_domain);
 
         let svg = select(context).selectAll("svg")
             .data(time_data)
@@ -177,7 +184,7 @@ Calendar.default = {
         scales: {
             value: {
                 type: 'sequential',
-                domain: [1,5],
+                domain: [-1, 5],
                 range: {
                     type: 'scale-chromatic',
                     scheme: 'YlOrRd'

@@ -15,10 +15,10 @@ let config = {
         scales: {
             value: {
                 type: 'sequential',
-                domain: [1,8],
+                domain: [-1,8],
                 range: {
                     type: 'scale-chromatic',
-                    scheme: 'YlOrRd'
+                    scheme: 'RdPu'
                 }
             },
             time: {
