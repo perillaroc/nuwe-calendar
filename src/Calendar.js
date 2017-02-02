@@ -1,5 +1,14 @@
-import {timeFormat, scaleQuantize, range, select, timeDays, timeMonths} from "d3";
-import {interpolateYlOrRd} from "d3-scale-chromatic";
+import {
+    timeFormat,
+    scaleSequential,
+    range,
+    select,
+    timeDays,
+    timeMonths
+} from "d3";
+import {
+    interpolateYlOrRd
+} from "d3-scale-chromatic";
 import {mergeConfig} from "./config";
 let moment = require('moment');
 
@@ -29,13 +38,8 @@ export class Calendar{
      *          },
      *          scales: {
      *              value: {
-     *                  type: 'quantize',
-     *                  domain: [1,5],
-     *                  range: {
-     *                      start: 0,
-     *                      stop: 1,
-     *                      step: 0.1
-     *                  }
+     *                  type: 'sequential',
+     *                  domain: [1,5]
      *              },
      *              time: {
      *                  type: 'range',
@@ -75,16 +79,8 @@ export class Calendar{
         chart.week = timeFormat("%U"); // week number of the year (Sunday as the first day of the week) as a decimal number [00,53].
         chart.format = timeFormat("%Y-%m-%d");
 
-        let color = scaleQuantize()
-            .domain(config.options.scales.value.domain)
-            .range(range(
-                config.options.scales.value.range.start,
-                config.options.scales.value.range.stop,
-                config.options.scales.value.range.step
-                ).map(function(d) {
-                    return interpolateYlOrRd(d);
-                })
-            );
+        let color = scaleSequential(interpolateYlOrRd)
+            .domain(config.options.scales.value.domain);
 
         let svg = select(context).selectAll("svg")
             .data(time_data)
@@ -180,12 +176,11 @@ Calendar.default = {
         },
         scales: {
             value: {
-                type: 'quantize',
+                type: 'sequential',
                 domain: [1,5],
                 range: {
-                    start: 0,
-                    stop: 1,
-                    step: 0.1
+                    type: 'scale-chromatic',
+                    scheme: 'YlOrRd'
                 }
             },
             time: {

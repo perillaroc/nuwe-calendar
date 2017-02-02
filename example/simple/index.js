@@ -14,12 +14,11 @@ let config = {
         },
         scales: {
             value: {
-                type: 'quantize',
-                domain: [1,5],
+                type: 'sequential',
+                domain: [1,8],
                 range: {
-                    start: 0,
-                    stop: 1,
-                    step: 0.1
+                    type: 'scale-chromatic',
+                    scheme: 'YlOrRd'
                 }
             },
             time: {
