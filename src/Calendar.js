@@ -67,14 +67,14 @@ export class Calendar{
 
         // data
         chart.scheme = config.data.scheme;
-        let time_data = range(config.options.scales.time.start, config.options.scales.time.stop);
+        let year_list = range(config.options.scales.time.start, config.options.scales.time.stop);
 
         let date_map = new Map();
-        let days = timeDays(new Date(time_data[0], 0, 1), new Date(time_data[time_data.length-1], 12, 0));
-        days.forEach(function(element){
+        let day_list = timeDays(new Date(year_list[0], 0, 1), new Date(year_list[year_list.length-1], 12, 0));
+        day_list.forEach(function(element){
             date_map.set(moment(element).format("YYYY-MM-DD"), -1);
         });
-        chart.fullFillData(date_map, config);
+        Calendar.fullFillData(date_map, config);
 
         // show
         chart.day = timeFormat("%w"); // weekday as a decimal number [0(Sunday),6].
@@ -90,7 +90,7 @@ export class Calendar{
             .domain(color_domain);
 
         let svg = select(context).selectAll("svg")
-            .data(time_data)
+            .data(year_list)
             .enter().append("svg")
             .attr("width", chart.width)
             .attr("height", chart.height)
@@ -104,7 +104,9 @@ export class Calendar{
             .text(function(d) { return d; });
 
         let rect = svg.selectAll(".day")
-            .data(function(d) { return timeDays(new Date(d, 0, 1), new Date(d, 12, 0)); })
+            .data(function(year) {
+                return timeDays(new Date(year, 0, 1), new Date(year, 12, 0));
+            })
             .enter().append("rect")
             .attr("class", "day")
             .attr("width", chart.cell_size)
@@ -120,11 +122,25 @@ export class Calendar{
         rect.append("title")
             .text(function(d) { return d; });
 
-        svg.selectAll(".month")
-            .data(function(d) { return timeMonths(new Date(d, 0, 1), new Date(d, 12, 0)); })
-            .enter().append("path")
+        let months = svg.selectAll(".month")
+            .data(function(year) {
+                return timeMonths(new Date(year, 0, 1), new Date(year, 12, 0));
+            });
+        months.enter().append("path")
             .attr("class", "month")
             .attr("d", chart.monthPath.bind(chart));
+        months.enter().append("text")
+            .attr('x', function(d){
+                let last_day_in_month = new Date(d.getFullYear(), d.getMonth()+1, 0);
+                return ((parseInt(chart.week(d)) + parseInt(chart.week(last_day_in_month)))/2 + 0.5)* chart.cell_size;
+            })
+            .attr('y', function(d){
+                return -10;
+            })
+            .attr('text-anchor', 'middle')
+            .text(function(d){
+                return moment(d).format('MMM');
+            });
 
         rect.attr("class", function(d) {
             let date = moment(d).format("YYYY-MM-DD");
@@ -159,7 +175,7 @@ export class Calendar{
             + "H" + (w0 + 1) * this.cell_size + "Z";
     }
 
-    fullFillData(base_map, config){
+    static fullFillData(base_map, config){
         config.data.data.forEach(function(element){
             let date = moment(element.date, config.data.scheme.date);
             base_map.set(date.format("YYYY-MM-DD"), element.value);
