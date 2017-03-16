@@ -41,7 +41,10 @@ export class Calendar{
      *                  range: {
      *                      type: 'scale-chromatic',
      *                      scheme: 'YlOrRd'
-     *                  }
+     *                  },
+     *                  special: [
+     *                      { value: -1, color:"#eeeeee" }
+     *                  ]
      *              },
      *              time: {
      *                  type: 'range',
@@ -60,11 +63,6 @@ export class Calendar{
     drawChart(context, config) {
         let chart = this;
 
-        // option
-        chart.width = config.options.size.width;
-        chart.height = config.options.size.height;
-        chart.cell_size = config.options.size.cell_size; // cell size
-
         // data
         chart.scheme = config.data.scheme;
         let year_list = range(config.options.scales.time.start, config.options.scales.time.stop);
@@ -76,18 +74,27 @@ export class Calendar{
         });
         Calendar.fullFillData(date_map, config);
 
-        // show
-        chart.day = timeFormat("%w"); // weekday as a decimal number [0(Sunday),6].
-        chart.week = timeFormat("%U"); // week number of the year (Sunday as the first day of the week) as a decimal number [00,53].
-        chart.format = timeFormat("%Y-%m-%d");
+        // option
+        chart.width = config.options.size.width;
+        chart.height = config.options.size.height;
+        chart.cell_size = config.options.size.cell_size;
 
         let color_domain = config.options.scales.value.domain;
         let color_range_scheme = config.options.scales.value.range.scheme;
         let color_function_name = "interpolate" + color_range_scheme;
         let color_function = d3_scale_chromatic[color_function_name];
-
         let color = scaleSequential(color_function)
             .domain(color_domain);
+
+        let special_map = new Map();
+        config.options.scales.value.special.forEach(function(item){
+            special_map.set(item.value, item.color);
+        });
+
+        // format
+        chart.day = timeFormat("%w"); // weekday as a decimal number [0(Sunday),6].
+        chart.week = timeFormat("%U"); // week number of the year (Sunday as the first day of the week) as a decimal number [00,53].
+        chart.format = timeFormat("%Y-%m-%d");
 
         let svg = select(context).selectAll("svg")
             .data(year_list)
@@ -153,14 +160,15 @@ export class Calendar{
         }).style('fill', function(d){
             let date = moment(d).format("YYYY-MM-DD");
             if(date_map.get(date) == -1)
-                return "#eeeeee;";
+                return special_map.get(-1);
             else if(date_map.get(date) == 0)
-                return "rgb(194,230,153)";
+                return special_map.get(0);
             else
                 return color(date_map.get(date));
         }).select("title").text(function(d) {
             let date = moment(d).format("YYYY-MM-DD");
-            return date + ": " + date_map.get(date);
+            let value = date_map.get(date);
+            return date + ": " + value;
         });
     }
 
@@ -204,7 +212,17 @@ Calendar.default = {
                 range: {
                     type: 'scale-chromatic',
                     scheme: 'YlOrRd'
-                }
+                },
+                special: [
+                    {
+                        value: -1,
+                        color: "#eeeeee"
+                    },
+                    {
+                        value: 0,
+                        color: "rgb(194,230,153)"
+                    }
+                ]
             },
             time: {
                 type: 'range',
